@@ -35,7 +35,14 @@
 				effect = option.effect.indexOf(',') < 0 ? option.effect : option.effect.replace(' ', '').split(',')[0],
 				paginationEffect = option.effect.indexOf(',') < 0 ? effect : option.effect.replace(' ', '').split(',')[1],
 				next = 0, prev = 0, number = 0, current = 0, loaded, active, clicked, position, direction, imageParent, pauseTimeout, playInterval;
-			
+
+			// setup pagination container element
+			if(option.paginationContainer != ''){
+				var paginationElem = $(option.paginationContainer);
+			}else{
+				var paginationElem = elem;
+			}
+
 			// animate slides
 			function animate(direction, effect, clicked) {
 				if (!active && loaded) {
@@ -75,7 +82,7 @@
 							// get next from pagination item clicked, convert to number
 							next = parseInt(clicked,10);
 							// get previous from pagination item with class of current
-							prev = $('.' + option.paginationClass + ' li.'+ option.currentClass +' a', elem).attr('href').match('[^#/]+$');
+							prev = $('.' + option.paginationClass + ' li.'+ option.currentClass +' a', paginationElem).attr('href').match('[^#/]+$');
 							// if next is greater then previous set position of next slide to right of previous
 							if (next > prev) {
 								position = width*2;
@@ -219,9 +226,9 @@
 					// set current state for pagination
 					if (option.pagination) {
 						// remove current class from all
-						$('.'+ option.paginationClass +' li.' + option.currentClass, elem).removeClass(option.currentClass);
+						$('.'+ option.paginationClass +' li.' + option.currentClass, paginationElem).removeClass(option.currentClass);
 						// add current class to next
-						$('.' + option.paginationClass + ' li:eq('+ next +')', elem).addClass(option.currentClass);
+						$('.' + option.paginationClass + ' li:eq('+ next +')', paginationElem).addClass(option.currentClass);
 					}
 				}
 			} // end animate function
@@ -421,28 +428,28 @@
 			if (option.generatePagination) {
 				// create unordered list
 				if (option.prependPagination) {
-					elem.prepend('<ul class='+ option.paginationClass +'></ul>');
+					paginationElem.prepend('<ul class='+ option.paginationClass +'></ul>');
 				} else {
-					elem.append('<ul class='+ option.paginationClass +'></ul>');
+					paginationElem.append('<ul class='+ option.paginationClass +'></ul>');
 				}
 				// for each slide create a list item and link
 				control.children().each(function(){
-					$('.' + option.paginationClass, elem).append('<li><a href="#'+ number +'">'+ (number+1) +'</a></li>');
+					$('.' + option.paginationClass, paginationElem).append('<li><a href="#'+ number +'">'+ (number+1) +'</a></li>');
 					number++;
 				});
 			} else {
 				// if pagination exists, add href w/ value of item number to links
-				$('.' + option.paginationClass + ' li a', elem).each(function(){
+				$('.' + option.paginationClass + ' li a', paginationElem).each(function(){
 					$(this).attr('href', '#' + number);
 					number++;
 				});
 			}
 			
 			// add current class to start slide pagination
-			$('.' + option.paginationClass + ' li:eq('+ start +')', elem).addClass(option.currentClass);
+			$('.' + option.paginationClass + ' li:eq('+ start +')', paginationElem).addClass(option.currentClass);
 			
 			// click handling 
-			$('.' + option.paginationClass + ' li a', elem ).click(function(){
+			$('.' + option.paginationClass + ' li a', paginationElem ).click(function(){
 				// pause slideshow
 				if (option.play) {
 					 pause();
@@ -511,7 +518,8 @@
 		bigTarget: false, // boolean, Set to true and the whole slide will link to next slide on click
 		animationStart: function(){}, // Function called at the start of animation
 		animationComplete: function(){}, // Function called at the completion of animation
-		slidesLoaded: function() {} // Function is called when slides is fully loaded
+		slidesLoaded: function() {}, // Function is called when slides is fully loaded
+		paginationContainer: '' // string, set id or class of the ppagination container if separate from slider markup
 	};
 	
 	// Randomize slide order on load
